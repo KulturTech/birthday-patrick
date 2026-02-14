@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown — Patrick's Geburtstag 🎂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #0e0b14;
+    --card:   #1e1729;
+    --violet: #7c4dff;
+    --pink:   #ff4d9b;
+    --gold:   #ffd166;
+    --cyan:   #4dffd2;
+    --text:   #f0eaf8;
+    --muted:  #9080b0;
+    --border: rgba(124,77,255,0.2);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  /* Glow */
+  .glow {
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,77,255,0.15) 0%, rgba(255,77,155,0.06) 50%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+    50%       { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+  }
+
+  .icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255,77,155,0.5));
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-10px); }
+  }
+
+  .tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(2rem, 7vw, 4rem);
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--text) 0%, var(--violet) 50%, var(--pink) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.3rem;
+  }
+
+  .name {
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(255,209,102,0.4);
+    margin-bottom: 2.5rem;
+  }
+
+  /* Countdown grid */
+  .countdown {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .unit {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.8rem;
+    min-width: 100px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .unit:hover {
+    border-color: rgba(124,77,255,0.5);
+    box-shadow: 0 8px 30px rgba(124,77,255,0.15);
+  }
+
+  .num {
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    line-height: 1;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255,209,102,0.4);
+  }
+
+  .label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+  }
+
+  /* Birthday message (hidden until day arrives) */
+  .birthday-msg {
+    display: none;
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    background: linear-gradient(135deg, var(--gold), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.4;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Stars */
+  #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="glow"></div>
+
+<div class="icon">🎂</div>
+<p class="tag">10. März</p>
+<h1>Countdown zum Geburtstag</h1>
+<p class="name">Patrick</p>
+
+<div class="countdown">
+  <div class="unit">
+    <div class="num" id="days">--</div>
+    <div class="label">Tage</div>
+  </div>
+  <div class="unit">
+    <div class="num" id="hours">--</div>
+    <div class="label">Stunden</div>
+  </div>
+  <div class="unit">
+    <div class="num" id="mins">--</div>
+    <div class="label">Minuten</div>
+  </div>
+  <div class="unit">
+    <div class="num" id="secs">--</div>
+    <div class="label">Sekunden</div>
+  </div>
+</div>
+
+<p class="birthday-msg" id="bday-msg">Alles Gute zum Geburtstag, Patrick! 🎉🥳</p>
+<p class="sub">Mit all meiner Liebe 💜</p>
+
+<script>
+  /* ── Countdown ── */
+  function tick() {
+    const now  = new Date();
+    const year = (now.getMonth() > 2 || (now.getMonth() === 2 && now.getDate() > 10))
+      ? now.getFullYear() + 1
+      : now.getFullYear();
+    const bday = new Date(year, 2, 10);
+    const diff = bday - now;
+
+    if (diff <= 0) {
+      ['days','hours','mins','secs'].forEach(id => document.getElementById(id).textContent = '00');
+      document.getElementById('bday-msg').style.display = 'block';
+      return;
+    }
+
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById('days').textContent  = String(d).padStart(2, '0');
+    document.getElementById('hours').textContent = String(h).padStart(2, '0');
+    document.getElementById('mins').textContent  = String(m).padStart(2, '0');
+    document.getElementById('secs').textContent  = String(s).padStart(2, '0');
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  /* ── Stars ── */
+  const c = document.getElementById('stars');
+  const ctx = c.getContext('2d');
+  let W, H, pts = [];
+
+  function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
+  resize();
+  addEventListener('resize', resize);
+
+  for (let i = 0; i < 100; i++) {
+    pts.push({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random() * 1.2,
+               a: 0.2 + Math.random() * 0.6, t: Math.random() * Math.PI * 2 });
+  }
+
+  (function draw() {
+    ctx.clearRect(0, 0, W, H);
+    pts.forEach(p => {
+      p.t += 0.02;
+      ctx.beginPath();
+      ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(240,234,248,${p.a * (0.6 + 0.4 * Math.sin(p.t))})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  })();
+</script>
+</body>
+</html>
